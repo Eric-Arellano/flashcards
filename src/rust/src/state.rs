@@ -1,7 +1,8 @@
 use std::sync::Mutex;
 
-use crate::models::deck::Deck;
-use crate::models::note::{Note, NoteKind};
+use crate::models::card::{Card, CardId, CardKind};
+use crate::models::deck::{Deck, DeckId};
+use crate::models::note::Note;
 
 #[derive(Debug)]
 pub struct State {
@@ -11,14 +12,16 @@ pub struct State {
 impl State {
     pub fn new() -> Self {
         Self {
-            deck: Mutex::new(Deck::new()),
+            deck: Mutex::new(Deck::new(DeckId(1))),
         }
     }
 
-    pub fn add_note(&self, note: Note, kind: NoteKind) {
+    pub fn add_note(&self, note: Note) {
+        let cards = vec![
+            Card::new(CardId(1), note.id, CardKind::Term),
+            Card::new(CardId(2), note.id, CardKind::Definition),
+        ];
         let mut deck = self.deck.lock().unwrap();
-        for c in note.into_cards(kind) {
-            deck.add(c);
-        }
+        deck.add(note, cards);
     }
 }

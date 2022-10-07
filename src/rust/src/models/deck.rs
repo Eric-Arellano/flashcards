@@ -1,20 +1,32 @@
-use crate::models::card::Card;
+use std::collections::HashMap;
 
-/// A collection of cards.
-///
-/// This is intentionally kept simple because the app only supports a single
-/// global deck, even though API routes are structured to allow adding more.
-#[derive(Clone, Debug, Hash)]
+use crate::models::card::{Card, CardId};
+use crate::models::note::{Note, NoteId};
+
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+pub struct DeckId(pub u64);
+
+/// A collection of notes and cards.
+#[derive(Clone, Debug)]
 pub struct Deck {
-    cards: Vec<Card>,
+    pub id: DeckId,
+    cards_by_id: HashMap<CardId, Card>,
+    notes_by_id: HashMap<NoteId, Note>,
 }
 
 impl Deck {
-    pub fn new() -> Self {
-        Self { cards: vec![] }
+    pub fn new(id: DeckId) -> Self {
+        Self {
+            id,
+            cards_by_id: HashMap::new(),
+            notes_by_id: HashMap::new(),
+        }
     }
 
-    pub fn add(&mut self, card: Card) {
-        self.cards.push(card);
+    pub fn add(&mut self, note: Note, cards: Vec<Card>) {
+        self.notes_by_id.insert(note.id, note);
+        for card in cards {
+            self.cards_by_id.insert(card.id, card);
+        }
     }
 }

@@ -1,6 +1,7 @@
-use std::sync::Arc;
+use crate::models::note::NoteId;
 
-use crate::models::note::Note;
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+pub struct CardId(pub u64);
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum CardKind {
@@ -12,14 +13,14 @@ pub enum CardKind {
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq)]
 pub struct Card {
-    // The Arc ensures data integrity if a note has >1 associated card.
-    note: Arc<Note>,
+    pub id: CardId,
+    note_id: NoteId,
     kind: CardKind,
     // TODO: store review history.
 }
 
 impl Card {
-    pub fn new(note: Arc<Note>, kind: CardKind) -> Self {
-        Self { note, kind }
+    pub fn new(id: CardId, note_id: NoteId, kind: CardKind) -> Self {
+        Self { id, note_id, kind }
     }
 }
