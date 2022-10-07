@@ -2,3 +2,5 @@
 /.pants.d
 /.pids
 /dist
+
+/src/rust/target/
