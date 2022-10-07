@@ -1,6 +1,7 @@
 use std::sync::Mutex;
 
-use crate::models::card::{Deck, Note, NoteKind};
+use crate::models::deck::Deck;
+use crate::models::note::{Note, NoteKind};
 
 #[derive(Debug)]
 pub struct State {

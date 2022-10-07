@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use axum::routing;
 
-use crate::models::card::{Note, NoteKind};
+use crate::models::note::{Note, NoteKind};
 use crate::state::State;
 
 #[tokio::main]
