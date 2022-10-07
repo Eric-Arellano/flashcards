@@ -1,1 +1,1 @@
-mod card;
+pub mod card;
