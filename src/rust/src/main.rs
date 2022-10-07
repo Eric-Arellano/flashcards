@@ -1,12 +1,12 @@
+mod handlers;
 mod models;
+mod routes;
 mod state;
 
 use std::sync::Arc;
 
-use axum::routing;
-
-use crate::models::note::{Note, NoteKind};
-use crate::state::State;
+use models::note::{Note, NoteKind};
+use state::State;
 
 #[tokio::main]
 async fn main() {
@@ -19,19 +19,9 @@ async fn main() {
         NoteKind::TermAndDefinition,
     );
 
-    let app = axum::Router::new().route(
-        "/",
-        routing::get({
-            let state = Arc::clone(&state);
-            move || get_deck(Arc::clone(&state))
-        }),
-    );
+    let app = routes::create(state);
     axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
         .serve(app.into_make_service())
         .await
         .unwrap();
-}
-
-async fn get_deck(state: Arc<State>) -> String {
-    format!("{state:?}")
 }
