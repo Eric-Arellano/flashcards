@@ -1,0 +1,4 @@
+# Pants files
+/.pants.d
+/.pids
+/dist
