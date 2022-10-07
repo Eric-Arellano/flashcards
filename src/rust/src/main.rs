@@ -12,10 +12,11 @@ use crate::state::State;
 async fn main() {
     let state = Arc::new(State::new());
     state.add_note(
-        Note::builder("la palabra".to_owned(), NoteKind::TermAndDefinition)
+        Note::builder("la palabra".to_owned())
             .definitions(&["'a word'".to_owned()])
             .examples(&["Hay dos palabras en la frase 'buenos dias'.".to_owned()])
             .build(),
+        NoteKind::TermAndDefinition,
     );
 
     let app = axum::Router::new().route(

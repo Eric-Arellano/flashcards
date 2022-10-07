@@ -1,12 +1,5 @@
 use std::sync::Arc;
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
-pub enum NoteKind {
-    TermOnly,
-    DefinitionOnly,
-    TermAndDefinition,
-}
-
 /// A Note holds all the information necessary to relate a term with its definition(s).
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 pub struct Note {
@@ -20,8 +13,6 @@ pub struct Note {
     notes: Vec<String>,
     /// Any clues to be shown when only the definition is shown.
     clues: Vec<String>,
-    /// What types of cards are associated with the note.
-    kind: NoteKind,
     // TODO: store photos.
     // TODO: store created & modified datetimes.
 }
@@ -32,18 +23,16 @@ pub struct NoteBuilder {
     examples: Vec<String>,
     notes: Vec<String>,
     clues: Vec<String>,
-    kind: NoteKind,
 }
 
 impl NoteBuilder {
-    fn new(term: String, kind: NoteKind) -> Self {
+    fn new(term: String) -> Self {
         Self {
             term,
             definitions: vec![],
             examples: vec![],
             notes: vec![],
             clues: vec![],
-            kind,
         }
     }
 
@@ -71,7 +60,6 @@ impl NoteBuilder {
             examples,
             notes,
             clues,
-            kind,
         } = self;
         Note {
             term,
@@ -79,20 +67,25 @@ impl NoteBuilder {
             examples,
             notes,
             clues,
-            kind,
         }
     }
 }
 
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+pub enum NoteKind {
+    TermOnly,
+    DefinitionOnly,
+    TermAndDefinition,
+}
+
 impl Note {
-    pub fn builder(term: String, kind: NoteKind) -> NoteBuilder {
-        NoteBuilder::new(term, kind)
+    pub fn builder(term: String) -> NoteBuilder {
+        NoteBuilder::new(term)
     }
 
-    pub fn into_cards(self) -> Vec<Card> {
-        let note_kind = self.kind;
+    pub fn into_cards(self, kind: NoteKind) -> Vec<Card> {
         let note = Arc::new(self);
-        match note_kind {
+        match kind {
             NoteKind::TermOnly => vec![Card::new(note, CardKind::Term)],
             NoteKind::DefinitionOnly => vec![Card::new(note, CardKind::Definition)],
             NoteKind::TermAndDefinition => vec![

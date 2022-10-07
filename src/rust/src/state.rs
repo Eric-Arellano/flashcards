@@ -1,6 +1,6 @@
 use std::sync::Mutex;
 
-use crate::models::card::{Deck, Note};
+use crate::models::card::{Deck, Note, NoteKind};
 
 #[derive(Debug)]
 pub struct State {
@@ -14,9 +14,9 @@ impl State {
         }
     }
 
-    pub fn add_note(&self, note: Note) {
+    pub fn add_note(&self, note: Note, kind: NoteKind) {
         let mut deck = self.deck.lock().unwrap();
-        for c in note.into_cards() {
+        for c in note.into_cards(kind) {
             deck.add(c);
         }
     }
