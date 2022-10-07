@@ -104,7 +104,7 @@ pub enum CardKind {
     Definition,
 }
 
-#[derive(Clone, Debug, Hash)]
+#[derive(Clone, Debug, Hash, PartialEq, Eq)]
 pub struct Card {
     // The Arc ensures data integrity if a note has >1 associated card.
     note: Arc<Note>,
@@ -134,5 +134,33 @@ impl Deck {
 
     pub fn add(&mut self, card: Card) {
         self.cards.push(card);
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use std::sync::Arc;
+
+    use super::{Card, CardKind, Note, NoteKind};
+
+    #[test]
+    fn test_note_into_cards() {
+        let note = Note::builder("term1".to_owned()).build();
+        let note_arc = Arc::new(note.clone());
+        assert_eq!(
+            note.clone().into_cards(NoteKind::TermOnly),
+            vec![Card::new(note_arc.clone(), CardKind::Term)]
+        );
+        assert_eq!(
+            note.clone().into_cards(NoteKind::DefinitionOnly),
+            vec![Card::new(note_arc.clone(), CardKind::Definition)]
+        );
+        assert_eq!(
+            note.clone().into_cards(NoteKind::TermAndDefinition),
+            vec![
+                Card::new(note_arc.clone(), CardKind::Term),
+                Card::new(note_arc.clone(), CardKind::Definition)
+            ]
+        );
     }
 }
