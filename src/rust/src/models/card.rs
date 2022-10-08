@@ -1,9 +1,11 @@
 use crate::models::note::NoteId;
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+use serde::Serialize;
+
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Serialize)]
 pub struct CardId(pub u64);
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Serialize)]
 pub enum CardKind {
     /// Show the user the term first.
     Term,
@@ -11,7 +13,7 @@ pub enum CardKind {
     Definition,
 }
 
-#[derive(Clone, Debug, Hash, PartialEq, Eq)]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, Serialize)]
 pub struct Card {
     pub id: CardId,
     note_id: NoteId,

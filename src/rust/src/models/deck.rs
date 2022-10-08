@@ -10,8 +10,8 @@ pub struct DeckId(pub u64);
 #[derive(Clone, Debug)]
 pub struct Deck {
     pub id: DeckId,
-    cards_by_id: HashMap<CardId, Card>,
-    notes_by_id: HashMap<NoteId, Note>,
+    pub cards_by_id: HashMap<CardId, Card>,
+    pub notes_by_id: HashMap<NoteId, Note>,
 }
 
 impl Deck {

@@ -1,8 +1,10 @@
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+use serde::Serialize;
+
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Serialize)]
 pub struct NoteId(pub u64);
 
 /// A Note holds all the information necessary to relate a term with its definition(s).
-#[derive(Clone, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize)]
 pub struct Note {
     pub id: NoteId,
     /// The word or phrase.
