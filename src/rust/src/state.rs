@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::sync::Mutex;
 
 use crate::models::card::{Card, CardId, CardKind};
@@ -8,6 +8,7 @@ use crate::models::note::{CreateCardsKind, Note, NoteBuilder, NoteId};
 pub struct State {
     pub cards_by_id: Mutex<HashMap<CardId, Card>>,
     pub notes_by_id: Mutex<HashMap<NoteId, Note>>,
+    defined_terms: Mutex<HashSet<String>>,
 }
 
 impl State {
@@ -15,12 +16,22 @@ impl State {
         Self {
             cards_by_id: Mutex::new(HashMap::new()),
             notes_by_id: Mutex::new(HashMap::new()),
+            defined_terms: Mutex::new(HashSet::new()),
         }
     }
 
-    pub fn add_note(&self, note_builder: NoteBuilder) -> (Note, Vec<Card>) {
-        // Note: this lock is held for the whole function because creating notes and cards should
+    /// Save the note & its associated cards to the in-memory state.
+    ///
+    /// Returns None if the note was already created, based on the `term`.
+    pub fn add_note(&self, note_builder: NoteBuilder) -> Option<(Note, Vec<Card>)> {
+        // Note: the locks are held for the whole function because creating notes and cards should
         // be done atomically.
+        let mut defined_terms = self.defined_terms.lock().unwrap();
+        if defined_terms.contains(&note_builder.term) {
+            return None;
+        }
+        defined_terms.insert(note_builder.term.clone());
+
         let mut notes_by_id = self.notes_by_id.lock().unwrap();
         let note_id = match notes_by_id.keys().max() {
             None => NoteId(1),
@@ -36,8 +47,14 @@ impl State {
         };
 
         let cards = match create_cards_kind {
-            CreateCardsKind::TermOnly => vec![ Card::new(CardId(last_card_id + 1), note_id, CardKind::Term)],
-            CreateCardsKind::DefinitionOnly => vec![ Card::new(CardId(last_card_id + 1), note_id, CardKind::Definition)],
+            CreateCardsKind::TermOnly => {
+                vec![Card::new(CardId(last_card_id + 1), note_id, CardKind::Term)]
+            }
+            CreateCardsKind::DefinitionOnly => vec![Card::new(
+                CardId(last_card_id + 1),
+                note_id,
+                CardKind::Definition,
+            )],
             CreateCardsKind::TermAndDefinition => vec![
                 Card::new(CardId(last_card_id + 1), note_id, CardKind::Term),
                 Card::new(CardId(last_card_id + 2), note_id, CardKind::Definition),
@@ -47,6 +64,6 @@ impl State {
             cards_by_id.insert(card.id, card.clone());
         }
 
-        (note, cards)
+        Some((note, cards))
     }
 }

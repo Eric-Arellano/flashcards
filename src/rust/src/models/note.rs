@@ -31,7 +31,7 @@ pub enum CreateCardsKind {
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Deserialize)]
 pub struct NoteBuilder {
-    term: String,
+    pub term: String,
     definitions: Vec<String>,
     examples: Vec<String>,
     notes: Vec<String>,

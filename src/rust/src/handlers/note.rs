@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use axum::extract::Path;
 use axum::http::{header, StatusCode};
-use axum::response::ErrorResponse;
+use axum::response::{ErrorResponse, IntoResponse};
 use axum::{response, Json};
 use serde::Serialize;
 
@@ -41,11 +41,14 @@ pub struct NoteCreateResult {
 pub async fn create_note(
     Json(payload): Json<NoteBuilder>,
     state: Arc<State>,
-) -> impl response::IntoResponse {
-    let (note, cards) = state.add_note(payload);
-    (
-        StatusCode::CREATED,
-        [(header::LOCATION, format!("/api/notes/{}", note.id.0))],
-        Json(NoteCreateResult { note, cards }),
-    )
+) -> impl IntoResponse {
+    match state.add_note(payload) {
+        None => StatusCode::CONFLICT.into_response(),
+        Some((note, cards)) => (
+            StatusCode::CREATED,
+            [(header::LOCATION, format!("/api/notes/{}", note.id.0))],
+            Json(NoteCreateResult { note, cards }),
+        )
+            .into_response(),
+    }
 }
