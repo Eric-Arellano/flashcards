@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Serialize)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Serialize, Ord, PartialOrd)]
 pub struct NoteId(pub u64);
 
 /// A Note holds all the information necessary to relate a term with its definition(s).
@@ -22,7 +22,6 @@ pub struct Note {
 }
 
 pub struct NoteBuilder {
-    id: NoteId,
     term: String,
     definitions: Vec<String>,
     examples: Vec<String>,
@@ -31,9 +30,8 @@ pub struct NoteBuilder {
 }
 
 impl NoteBuilder {
-    fn new(id: NoteId, term: String) -> Self {
+    fn new(term: String) -> Self {
         Self {
-            id,
             term,
             definitions: vec![],
             examples: vec![],
@@ -62,9 +60,8 @@ impl NoteBuilder {
         self
     }
 
-    pub fn build(self) -> Note {
+    pub fn build(self, id: NoteId) -> Note {
         let Self {
-            id,
             term,
             definitions,
             examples,
@@ -83,7 +80,7 @@ impl NoteBuilder {
 }
 
 impl Note {
-    pub fn builder(id: NoteId, term: String) -> NoteBuilder {
-        NoteBuilder::new(id, term)
+    pub fn builder(term: String) -> NoteBuilder {
+        NoteBuilder::new(term)
     }
 }

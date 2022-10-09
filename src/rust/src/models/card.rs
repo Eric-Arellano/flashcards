@@ -2,7 +2,7 @@ use crate::models::note::NoteId;
 
 use serde::Serialize;
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Serialize)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Serialize, Ord, PartialOrd)]
 pub struct CardId(pub u64);
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Serialize)]
