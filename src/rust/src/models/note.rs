@@ -21,7 +21,7 @@ pub struct Note {
     // TODO: store created & modified datetimes.
 }
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Deserialize)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum CreateCardsKind {
     TermOnly,
@@ -29,7 +29,7 @@ pub enum CreateCardsKind {
     TermAndDefinition,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Hash, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Hash, Deserialize, Serialize)]
 pub struct NoteBuilder {
     pub term: String,
     definitions: Vec<String>,
