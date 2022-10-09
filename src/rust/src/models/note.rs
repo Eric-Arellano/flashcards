@@ -1,4 +1,4 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Serialize, Ord, PartialOrd)]
 pub struct NoteId(pub u64);
@@ -21,6 +21,7 @@ pub struct Note {
     // TODO: store created & modified datetimes.
 }
 
+#[derive(Clone, Debug, Eq, PartialEq, Hash, Deserialize)]
 pub struct NoteBuilder {
     term: String,
     definitions: Vec<String>,
@@ -30,6 +31,7 @@ pub struct NoteBuilder {
 }
 
 impl NoteBuilder {
+    #[allow(dead_code)]
     fn new(term: String) -> Self {
         Self {
             term,
@@ -40,21 +42,25 @@ impl NoteBuilder {
         }
     }
 
+    #[allow(dead_code)]
     pub fn definitions(mut self, definitions: &[String]) -> Self {
         self.definitions = definitions.into();
         self
     }
 
+    #[allow(dead_code)]
     pub fn examples(mut self, examples: &[String]) -> Self {
         self.examples = examples.into();
         self
     }
 
+    #[allow(dead_code)]
     pub fn notes(mut self, notes: &[String]) -> Self {
         self.notes = notes.into();
         self
     }
 
+    #[allow(dead_code)]
     pub fn clues(mut self, clues: &[String]) -> Self {
         self.clues = clues.into();
         self
@@ -80,6 +86,7 @@ impl NoteBuilder {
 }
 
 impl Note {
+    #[allow(dead_code)]
     pub fn builder(term: String) -> NoteBuilder {
         NoteBuilder::new(term)
     }
