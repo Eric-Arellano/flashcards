@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::sync::Mutex;
 
 use crate::models::card::{Card, CardId, CardKind};
-use crate::models::note::{Note, NoteBuilder, NoteId};
+use crate::models::note::{CreateCardsKind, Note, NoteBuilder, NoteId};
 
 #[derive(Debug)]
 pub struct State {
@@ -26,7 +26,7 @@ impl State {
             None => NoteId(1),
             Some(NoteId(x)) => NoteId(x + 1),
         };
-        let note = note_builder.build(note_id);
+        let (note, create_cards_kind) = note_builder.build(note_id);
         notes_by_id.insert(note.id, note.clone());
 
         let mut cards_by_id = self.cards_by_id.lock().unwrap();
@@ -34,10 +34,15 @@ impl State {
             None => 0,
             Some(CardId(x)) => *x,
         };
-        let cards = vec![
-            Card::new(CardId(last_card_id + 1), note_id, CardKind::Term),
-            Card::new(CardId(last_card_id + 2), note_id, CardKind::Definition),
-        ];
+
+        let cards = match create_cards_kind {
+            CreateCardsKind::TermOnly => vec![ Card::new(CardId(last_card_id + 1), note_id, CardKind::Term)],
+            CreateCardsKind::DefinitionOnly => vec![ Card::new(CardId(last_card_id + 1), note_id, CardKind::Definition)],
+            CreateCardsKind::TermAndDefinition => vec![
+                Card::new(CardId(last_card_id + 1), note_id, CardKind::Term),
+                Card::new(CardId(last_card_id + 2), note_id, CardKind::Definition),
+            ],
+        };
         for card in &cards {
             cards_by_id.insert(card.id, card.clone());
         }

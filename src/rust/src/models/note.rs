@@ -21,6 +21,14 @@ pub struct Note {
     // TODO: store created & modified datetimes.
 }
 
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum CreateCardsKind {
+    TermOnly,
+    DefinitionOnly,
+    TermAndDefinition,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Deserialize)]
 pub struct NoteBuilder {
     term: String,
@@ -28,13 +36,15 @@ pub struct NoteBuilder {
     examples: Vec<String>,
     notes: Vec<String>,
     clues: Vec<String>,
+    cards_kind: CreateCardsKind,
 }
 
 impl NoteBuilder {
     #[allow(dead_code)]
-    fn new(term: String) -> Self {
+    fn new(term: String, cards_kind: CreateCardsKind) -> Self {
         Self {
             term,
+            cards_kind,
             definitions: vec![],
             examples: vec![],
             notes: vec![],
@@ -66,28 +76,30 @@ impl NoteBuilder {
         self
     }
 
-    pub fn build(self, id: NoteId) -> Note {
+    pub fn build(self, id: NoteId) -> (Note, CreateCardsKind) {
         let Self {
             term,
             definitions,
             examples,
             notes,
             clues,
+            cards_kind,
         } = self;
-        Note {
+        let note = Note {
             id,
             term,
             definitions,
             examples,
             notes,
             clues,
-        }
+        };
+        (note, cards_kind)
     }
 }
 
 impl Note {
     #[allow(dead_code)]
-    pub fn builder(term: String) -> NoteBuilder {
-        NoteBuilder::new(term)
+    pub fn builder(term: String, cards_kind: CreateCardsKind) -> NoteBuilder {
+        NoteBuilder::new(term, cards_kind)
     }
 }
